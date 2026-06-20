@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Vacation Vote — Ranked Choice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16323b; --slate:#5a727c; --line:#e6e0d4;
+    --paper:#fbf7ef; --surface:#ffffff;
+    --brand:#ff7a4d; --brandd:#e85a2c; --sea:#17859b; --sun:#ffca28;
+    --green:#2bb673; --blue:#2e5bff; --teal:#17859b; --orange:#ff8c42;
+    --serif:'Baloo 2',system-ui,sans-serif; --sans:'Nunito',system-ui,sans-serif;
+    --shadow:0 10px 28px rgba(22,50,59,.12);
+    --shadow-hard:5px 6px 0 var(--ink);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.5;
+    background-image:radial-gradient(var(--line) 1.2px, transparent 1.2px);background-size:26px 26px}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(1rem,3vw,2rem) clamp(.9rem,3vw,1.5rem) 4rem}
+
+  header.hero{position:relative;overflow:hidden;border-radius:1.4rem;padding:clamp(1.4rem,4vw,2.4rem);
+    color:#fff;box-shadow:var(--shadow);
+    background:linear-gradient(135deg,#17859b 0%,#1fa6a0 45%,#ffb03a 100%)}
+  .hero h1{font-family:var(--serif);font-weight:800;font-size:clamp(1.8rem,5vw,2.9rem);line-height:1.05;
+    text-shadow:0 2px 0 rgba(0,0,0,.12)}
+  .hero p{font-weight:600;max-width:46ch;margin-top:.5rem;color:#f2fbfb;font-size:clamp(.95rem,2vw,1.08rem)}
+  .hero .sun{position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#ffe17a,#ffca28);opacity:.85;filter:blur(1px)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.1rem}
+  .legend .dest{display:flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.16);
+    border:1.5px solid rgba(255,255,255,.4);border-radius:.8rem;padding:.4rem .7rem;font-weight:700;backdrop-filter:blur(3px)}
+  .legend .dest .em{font-size:1.15rem}
+
+  .panel{background:var(--surface);border:2.5px solid var(--ink);border-radius:1.2rem;
+    box-shadow:var(--shadow-hard);padding:clamp(1rem,2.5vw,1.4rem);margin-top:1.4rem}
+  .panel h2{font-family:var(--serif);font-weight:800;font-size:1.35rem;display:flex;align-items:center;gap:.5rem}
+  .hint{color:var(--slate);font-weight:600;font-size:.92rem;margin-top:.25rem}
+
+  /* voter cards */
+  .voter{border:2px solid var(--line);border-radius:1rem;padding:.9rem;margin-top:1rem;background:#fffdf8;
+    transition:border-color .15s}
+  .voter:focus-within{border-color:var(--sea)}
+  .voter-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .voter-num{flex:0 0 auto;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--sun);color:var(--ink);
+    font-family:var(--serif);font-weight:800;display:grid;place-items:center;border:2px solid var(--ink)}
+  .voter-top input{flex:1 1 12rem;min-width:9rem;font-family:var(--sans);font-weight:700;font-size:1.02rem;
+    color:var(--ink);border:2px solid var(--line);border-radius:.6rem;padding:.5rem .7rem;background:#fff}
+  .voter-top input:focus{outline:none;border-color:var(--sea)}
+  .rm{flex:0 0 auto;border:2px solid var(--line);background:#fff;color:var(--slate);border-radius:.6rem;
+    width:2.2rem;height:2.2rem;font-size:1.1rem;cursor:pointer;font-weight:800;line-height:1}
+  .rm:hover{border-color:#e25b5b;color:#e25b5b}
+
+  .ranklbl{font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);
+    margin:.8rem 0 .45rem}
+  .ranks{display:flex;flex-direction:column;gap:.5rem}
+  .rankitem{display:flex;align-items:center;gap:.7rem;border:2px solid var(--ink);border-radius:.7rem;
+    padding:.5rem .6rem;background:#fff;box-shadow:2px 3px 0 rgba(22,50,59,.12)}
+  .rankitem .ord{flex:0 0 auto;width:2.5rem;text-align:center;font-family:var(--serif);font-weight:800;font-size:.95rem;color:#fff;
+    border-radius:.45rem;padding:.18rem 0;line-height:1.1}
+  .rankitem .em{font-size:1.5rem;flex:0 0 auto}
+  .rankitem .nm{flex:1 1 auto;font-weight:800;font-size:1.05rem}
+  .rankitem .arrows{flex:0 0 auto;display:flex;gap:.3rem}
+  .rankitem .arrows button{width:2rem;height:2rem;border-radius:.5rem;border:2px solid var(--line);background:#fff;
+    cursor:pointer;font-weight:900;color:var(--ink);font-size:1rem;line-height:1;display:grid;place-items:center}
+  .rankitem .arrows button:hover:not(:disabled){border-color:var(--sea);background:#eefafa}
+  .rankitem .arrows button:disabled{opacity:.3;cursor:not-allowed}
+  .rankitem.dragging{opacity:.55}
+  .rankitem .grip{cursor:grab;color:var(--slate);font-size:1.1rem;flex:0 0 auto;user-select:none}
+
+  .actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem;align-items:center}
+  button.btn{font-family:var(--serif);font-weight:800;cursor:pointer;border-radius:.8rem;border:2.5px solid var(--ink);
+    padding:.7rem 1.1rem;font-size:1rem;transition:transform .08s}
+  button.btn:active{transform:translateY(2px)}
+  .btn.add{background:#fff;color:var(--ink)}
+  .btn.add:hover{background:#fff7e6}
+  .btn.calc{background:var(--brand);color:#fff;box-shadow:var(--shadow-hard);font-size:1.1rem;padding:.8rem 1.5rem}
+  .btn.calc:hover{background:var(--brandd)}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--slate);font-size:.9rem;padding:.5rem .8rem}
+  .btn.ghost:hover{color:#e25b5b;border-color:#e25b5b}
+  .vcount{color:var(--slate);font-weight:700;font-size:.92rem;margin-left:auto}
+
+  /* results */
+  #results{margin-top:1.4rem}
+  .winner{border-radius:1.2rem;border:2.5px solid var(--ink);box-shadow:var(--shadow-hard);overflow:hidden}
+  .winner .top{padding:1.3rem 1.4rem;color:#fff;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .winner .trophy{font-size:2.6rem;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+  .winner .wlabel{font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+  .winner .wname{font-family:var(--serif);font-weight:800;font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1}
+  .winner .wsub{padding:.7rem 1.4rem;background:#fff;font-weight:700;color:var(--slate);font-size:.95rem}
+
+  .standings{display:flex;flex-direction:column;gap:.55rem;margin-top:1rem}
+  .standing{display:flex;align-items:center;gap:.8rem;border:2px solid var(--line);border-radius:.8rem;padding:.6rem .8rem;background:#fff}
+  .standing .medal{font-size:1.5rem;flex:0 0 2rem;text-align:center}
+  .standing .em{font-size:1.6rem}
+  .standing .nm{font-family:var(--serif);font-weight:800;font-size:1.12rem;flex:1 1 auto}
+  .standing .place{font-weight:800;color:var(--slate);font-size:.85rem}
+  .standing.first{border-color:var(--sun);background:#fffdf0;border-width:3px}
+
+  details.rounds{margin-top:1.1rem;border:2px solid var(--line);border-radius:.8rem;background:#fff}
+  details.rounds>summary{cursor:pointer;font-family:var(--serif);font-weight:800;padding:.8rem 1rem;font-size:1rem;list-style:none}
+  details.rounds>summary::-webkit-details-marker{display:none}
+  details.rounds>summary::before{content:"▸ ";color:var(--brand)}
+  details.rounds[open]>summary::before{content:"▾ "}
+  .rounds-body{padding:0 1rem 1rem}
+  .roundnote{font-weight:600;font-size:.95rem;color:var(--ink);padding:.55rem .75rem;border-left:4px solid var(--sea);
+    background:#f4fbfb;border-radius:.4rem;margin:.6rem 0}
+  .roundnote.elim{border-left-color:var(--brand);background:#fff4ef}
+  .roundnote.win{border-left-color:var(--green);background:#eefbf3}
+  .roundnote b{font-family:var(--serif)}
+  table.matrix{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.9rem}
+  table.matrix th,table.matrix td{padding:.45rem .5rem;text-align:center;border-bottom:1px solid var(--line)}
+  table.matrix th{font-family:var(--serif);font-weight:700;color:var(--ink)}
+  table.matrix th:first-child,table.matrix td:first-child{text-align:left;font-weight:700;color:var(--slate)}
+  table.matrix td.elimcell{color:#c14a2a;text-decoration:line-through;opacity:.6}
+  table.matrix td.leadcell{font-weight:800;background:#eefbf3}
+  .err{color:#c0392b;font-weight:700;margin-top:.8rem}
+  footer{text-align:center;color:var(--slate);font-weight:600;font-size:.82rem;margin-top:2rem}
+  @media (max-width:560px){
+    .rankitem .nm{font-size:.98rem}
+    .winner .top{gap:.6rem}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="sun" aria-hidden="true"></div>
+    <h1>🏝️ Family Vacation Vote</h1>
+    <p>Everyone ranks the four trips from favorite to least. We use <b>ranked-choice (instant-runoff)</b> voting to pick the winner — so the trip the whole family can rally behind comes out on top.</p>
+    <div class="legend" id="legend"></div>
+  </header>
+
+  <section class="panel">
+    <h2>🗳️ Cast your votes</h2>
+    <p class="hint">Type each person's name, then use the ▲ ▼ arrows (or drag) to put the trips in their order — <b>1st = most wanted</b>. Add a card for every voter.</p>
+    <div id="voters"></div>
+    <div class="actions">
+      <button class="btn add" id="addVoter">＋ Add a voter</button>
+      <button class="btn ghost" id="clearAll">Clear all</button>
+      <span class="vcount" id="vcount"></span>
+    </div>
+    <div class="actions" style="margin-top:1rem">
+      <button class="btn calc" id="calc">🏆 Calculate the winner</button>
+    </div>
+    <div id="err"></div>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+
+  <footer>Saved on this device automatically · Ranked-choice (instant-runoff) voting</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const STORAGE = 'vacationVoteV1';
+  const CANDS = [
+    {id:'costa-rica',   name:'Costa Rica',   emoji:'🦥', color:'#2bb673'},
+    {id:'disney-cruise',name:'Disney Cruise',emoji:'🚢', color:'#2e5bff'},
+    {id:'florida-keys', name:'Florida Keys', emoji:'🐠', color:'#17859b'},
+    {id:'socal',        name:'SoCal',        emoji:'🏖️', color:'#ff8c42'},
+  ];
+  const byId = id => CANDS.find(c=>c.id===id);
+  const ORD = ['1st','2nd','3rd','4th','5th','6th','7th','8th'];
+  const MEDAL = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣'];
+  const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'v'+Math.random().toString(36).slice(2);
+  const defaultOrder = () => CANDS.map(c=>c.id);
+  const esc = s => String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function newVoter(){ return {id:uid(), name:'', ranking:defaultOrder()}; }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE);
+      if(!raw) return null;
+      const v = JSON.parse(raw);
+      if(!Array.isArray(v)) return null;
+      // sanitize each ranking to a valid permutation of the 4 candidate ids
+      return v.map(p=>{
+        const seen = new Set(); const rank = [];
+        (Array.isArray(p.ranking)?p.ranking:[]).forEach(id=>{ if(byId(id) && !seen.has(id)){seen.add(id);rank.push(id);} });
+        CANDS.forEach(c=>{ if(!seen.has(c.id)) rank.push(c.id); });
+        return {id:p.id||uid(), name:typeof p.name==='string'?p.name:'', ranking:rank};
+      });
+    }catch(e){ return null; }
+  }
+  function save(){ try{ localStorage.setItem(STORAGE, JSON.stringify(voters)); }catch(e){} }
+
+  let voters = load() || [newVoter(), newVoter()];
+
+  /* ---------- rendering ---------- */
+  function renderLegend(){
+    document.getElementById('legend').innerHTML = CANDS.map(c=>
+      `<span class="dest"><span class="em">${c.emoji}</span>${esc(c.name)}</span>`).join('');
+  }
+
+  function voterCardHTML(v, i){
+    const items = v.ranking.map((id,idx)=>{
+      const c = byId(id);
+      return `<li class="rankitem" draggable="true" data-vid="${v.id}" data-idx="${idx}">
+        <span class="ord" style="background:${c.color}">${ORD[idx]}</span>
+        <span class="em" aria-hidden="true">${c.emoji}</span>
+        <span class="nm">${esc(c.name)}</span>
+        <span class="arrows">
+          <button data-act="up" data-vid="${v.id}" data-idx="${idx}" ${idx===0?'disabled':''} aria-label="Move ${esc(c.name)} up">▲</button>
+          <button data-act="down" data-vid="${v.id}" data-idx="${idx}" ${idx===v.ranking.length-1?'disabled':''} aria-label="Move ${esc(c.name)} down">▼</button>
+        </span>
+        <span class="grip" aria-hidden="true">⠿</span>
+      </li>`;
+    }).join('');
+    return `<div class="voter" data-vid="${v.id}">
+      <div class="voter-top">
+        <span class="voter-num">${i+1}</span>
+        <input type="text" placeholder="Voter ${i+1} name" value="${esc(v.name)}" data-name="${v.id}" aria-label="Voter ${i+1} name">
+        <button class="rm" data-rm="${v.id}" title="Remove this voter" aria-label="Remove voter">✕</button>
+      </div>
+      <div class="ranklbl">Their ranking — 1st = most wanted</div>
+      <ul class="ranks" data-ranks="${v.id}">${items}</ul>
+    </div>`;
+  }
+
+  function render(){
+    document.getElementById('voters').innerHTML = voters.map(voterCardHTML).join('');
+    document.getElementById('vcount').textContent =
+      voters.length + (voters.length===1?' voter':' voters');
+    attachVoterHandlers();
+  }
+
+  function attachVoterHandlers(){
+    // name inputs (update state, no re-render to keep focus)
+    document.querySelectorAll('input[data-name]').forEach(inp=>{
+      inp.addEventListener('input', e=>{
+        const v = voters.find(x=>x.id===e.target.getAttribute('data-name'));
+        if(v){ v.name = e.target.value; save(); }
+      });
+    });
+    // remove
+    document.querySelectorAll('button[data-rm]').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const id = e.currentTarget.getAttribute('data-rm');
+        voters = voters.filter(v=>v.id!==id);
+        if(voters.length===0) voters.push(newVoter());
+        save(); render();
+      });
+    });
+    // up/down arrows
+    document.querySelectorAll('.arrows button[data-act]').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const act = e.currentTarget.getAttribute('data-act');
+        const vid = e.currentTarget.getAttribute('data-vid');
+        const idx = +e.currentTarget.getAttribute('data-idx');
+        moveItem(vid, idx, act==='up'?-1:1);
+      });
+    });
+    attachDnD();
+  }
+
+  function moveItem(vid, idx, dir){
+    const v = voters.find(x=>x.id===vid); if(!v) return;
+    const j = idx+dir;
+    if(j<0 || j>=v.ranking.length) return;
+    const r = v.ranking;
+    [r[idx], r[j]] = [r[j], r[idx]];
+    save(); render();
+  }
+
+  // drag and drop reorder within one voter's list
+  let dragVid=null, dragIdx=null;
+  function attachDnD(){
+    document.querySelectorAll('.rankitem').forEach(li=>{
+      li.addEventListener('dragstart', e=>{
+        dragVid = li.getAttribute('data-vid'); dragIdx = +li.getAttribute('data-idx');
+        li.classList.add('dragging'); e.dataTransfer.effectAllowed='move';
+        try{ e.dataTransfer.setData('text/plain', String(dragIdx)); }catch(_){}
+      });
+      li.addEventListener('dragend', ()=> li.classList.remove('dragging'));
+      li.addEventListener('dragover', e=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; });
+      li.addEventListener('drop', e=>{
+        e.preventDefault();
+        const vid = li.getAttribute('data-vid');
+        const overIdx = +li.getAttribute('data-idx');
+        if(dragVid!==vid || dragIdx===null || dragIdx===overIdx) return;
+        const v = voters.find(x=>x.id===vid); if(!v) return;
+        const [moved] = v.ranking.splice(dragIdx,1);
+        v.ranking.splice(overIdx,0,moved);
+        dragVid=dragIdx=null;
+        save(); render();
+      });
+    });
+  }
+
+  /* ---------- ranked-choice (instant-runoff) ---------- */
+  function computeIRV(ballots, candIds){
+    const active = new Set(candIds);
+    const rounds = [];
+    const elimOrder = [];
+    let majority = null;
+
+    while(active.size > 1){
+      const tally = {}; active.forEach(c=>tally[c]=0);
+      let exhausted = 0;
+      for(const b of ballots){
+        const top = b.find(c=>active.has(c));
+        if(top!==undefined) tally[top]++; else exhausted++;
+      }
+      const totalActive = ballots.length - exhausted;
+      const leader = Object.keys(tally).reduce((a,c)=> tally[c]>tally[a]?c:a, Object.keys(tally)[0]);
+      if(!majority && totalActive>0 && tally[leader] > totalActive/2){
+        majority = {candidate:leader, votes:tally[leader], total:totalActive, round:rounds.length+1};
+      }
+      // who to eliminate: fewest votes; tiebreak by Borda (lower = out), then id
+      const minVotes = Math.min(...Object.values(tally));
+      let tied = Object.keys(tally).filter(c=>tally[c]===minVotes);
+      let tiebroken = false, loser;
+      if(tied.length===1){ loser = tied[0]; }
+      else {
+        tiebroken = true;
+        const borda = {}; tied.forEach(c=>borda[c]=0);
+        for(const b of ballots){
+          b.forEach((c,i)=>{ if(borda.hasOwnProperty(c)) borda[c] += (b.length-1-i); });
+        }
+        tied = tied.slice().sort((a,b)=> borda[a]-borda[b] || a.localeCompare(b));
+        loser = tied[0];
+      }
+      rounds.push({n:rounds.length+1, tally:Object.assign({},tally), totalActive, exhausted,
+                   leader, eliminated:loser, eliminatedVotes:tally[loser], tiebroken, tiedFor:tiebroken?tied.slice():null});
+      active.delete(loser);
+      elimOrder.push(loser);
+    }
+    const winner = [...active][0];
+    const ranking = [winner, ...elimOrder.slice().reverse()];
+    return {winner, ranking, rounds, elimOrder, majority, totalVoters:ballots.length};
+  }
+
+  /* ---------- results UI ---------- */
+  function calcAndRender(){
+    const errEl = document.getElementById('err'); errEl.innerHTML='';
+    const ballots = voters.map(v=>v.ranking.slice());
+    if(ballots.length === 0){
+      errEl.innerHTML = '<p class="err">Add at least one voter to calculate a result.</p>';
+      document.getElementById('results').innerHTML=''; return;
+    }
+    const res = computeIRV(ballots, CANDS.map(c=>c.id));
+    const nameOf = vid => { const v=voters.find(x=>x.id===vid); return (v && v.name.trim()) || ('Voter '+(voters.indexOf(v)+1)); };
+    void nameOf;
+    const w = byId(res.winner);
+
+    // round notes
+    let notes = '';
+    res.rounds.forEach(r=>{
+      const e = byId(r.eliminated);
+      let tie = '';
+      if(r.tiebroken){
+        const names = r.tiedFor.map(id=>byId(id).name).join(', ');
+        tie = ` <em>(tie for last between ${esc(names)} — broken by overall ranking strength)</em>`;
+      }
+      notes += `<div class="roundnote elim"><b>Round ${r.n}:</b> ${e.emoji} <b>${esc(e.name)}</b> had the fewest 1st-choice votes (${r.eliminatedVotes}) and was eliminated. Those ballots moved to their next pick.${tie}</div>`;
+    });
+    if(res.majority){
+      const m = byId(res.majority.candidate);
+      const pct = Math.round(res.majority.votes/res.majority.total*100);
+      notes += `<div class="roundnote win"><b>Round ${res.majority.round}:</b> ${m.emoji} <b>${esc(m.name)}</b> crossed a majority with ${res.majority.votes} of ${res.majority.total} votes (${pct}%) — winner! 🎉</div>`;
+    } else {
+      notes += `<div class="roundnote win">${w.emoji} <b>${esc(w.name)}</b> is the last trip standing — winner! 🎉</div>`;
+    }
+
+    // matrix table (rounds x candidates)
+    let head = '<tr><th>Round</th>' + CANDS.map(c=>`<th>${c.emoji} ${esc(c.name)}</th>`).join('') + '</tr>';
+    let body = res.rounds.map(r=>{
+      const cells = CANDS.map(c=>{
+        if(!(c.id in r.tally)) return '<td class="elimcell">—</td>';
+        const lead = c.id===r.leader ? ' leadcell':'';
+        const willElim = c.id===r.eliminated ? ' elimcell':'';
+        return `<td class="${lead}${willElim}">${r.tally[c.id]}</td>`;
+      }).join('');
+      return `<tr><td>${r.n}</td>${cells}</tr>`;
+    }).join('');
+
+    // standings
+    const standings = res.ranking.map((id,idx)=>{
+      const c = byId(id);
+      return `<div class="standing ${idx===0?'first':''}">
+        <span class="medal">${MEDAL[idx]||(idx+1)}</span>
+        <span class="em">${c.emoji}</span>
+        <span class="nm">${esc(c.name)}</span>
+        <span class="place">${ORD[idx]} place</span>
+      </div>`;
+    }).join('');
+
+    const subline = res.majority
+      ? `Won with a ${Math.round(res.majority.votes/res.majority.total*100)}% majority in round ${res.majority.round} · ${res.totalVoters} ${res.totalVoters===1?'voter':'voters'}`
+      : `Last trip standing after ${res.rounds.length} round${res.rounds.length===1?'':'s'} · ${res.totalVoters} ${res.totalVoters===1?'voter':'voters'}`;
+
+    document.getElementById('results').innerHTML = `
+      <div class="winner">
+        <div class="top" style="background:${w.color}">
+          <span class="trophy">🏆</span>
+          <div>
+            <div class="wlabel">The family is going to</div>
+            <div class="wname">${w.emoji} ${esc(w.name)}</div>
+          </div>
+        </div>
+        <div class="wsub">${subline}</div>
+      </div>
+      <div class="standings">${standings}</div>
+      <details class="rounds" open>
+        <summary>How the rounds played out</summary>
+        <div class="rounds-body">
+          ${notes}
+          <table class="matrix"><thead>${head}</thead><tbody>${body}</tbody></table>
+          <p class="hint" style="margin-top:.6rem">Each round counts everyone's top remaining pick. The trip with the fewest is knocked out and its votes flow to those voters' next choice, until one trip has a majority.</p>
+        </div>
+      </details>`;
+    document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  /* ---------- top-level buttons ---------- */
+  document.getElementById('addVoter').addEventListener('click', ()=>{
+    voters.push(newVoter()); save(); render();
+    const cards = document.querySelectorAll('.voter');
+    const last = cards[cards.length-1];
+    if(last){ last.scrollIntoView({behavior:'smooth',block:'center'}); const inp=last.querySelector('input'); if(inp) inp.focus(); }
+  });
+  document.getElementById('clearAll').addEventListener('click', ()=>{
+    if(!confirm('Clear all voters and results?')) return;
+    voters = [newVoter(), newVoter()];
+    save(); render(); document.getElementById('results').innerHTML=''; document.getElementById('err').innerHTML='';
+  });
+  document.getElementById('calc').addEventListener('click', calcAndRender);
+
+  // expose for automated testing
+  window.__vote = { computeIRV, loadVoters(arr){ voters = arr.map(v=>({id:uid(),name:v.name||'',ranking:v.ranking.slice()})); save(); render(); }, calc:calcAndRender, get voters(){return voters;} };
+
+  renderLegend();
+  render();
+})();
+</script>
+</body>
+</html>
