@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoCal vs. Costa Rica — Head-to-Head Vote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16323b; --slate:#5a727c; --line:#e6e0d4;
+    --paper:#fbf7ef; --surface:#ffffff;
+    --brand:#ff7a4d; --brandd:#e85a2c; --sea:#17859b; --sun:#ffca28;
+    --green:#2bb673; --orange:#ff8c42;
+    --serif:'Baloo 2',system-ui,sans-serif; --sans:'Nunito',system-ui,sans-serif;
+    --shadow:0 10px 28px rgba(22,50,59,.12);
+    --shadow-hard:5px 6px 0 var(--ink);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.5;
+    background-image:radial-gradient(var(--line) 1.2px, transparent 1.2px);background-size:26px 26px}
+  .wrap{max-width:820px;margin:0 auto;padding:clamp(1rem,3vw,2rem) clamp(.9rem,3vw,1.5rem) 4rem}
+  a.nav{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;color:var(--sea);text-decoration:none;
+    font-size:.92rem;margin-bottom:.8rem}
+  a.nav:hover{text-decoration:underline}
+
+  header.hero{position:relative;overflow:hidden;border-radius:1.4rem;padding:clamp(1.4rem,4vw,2.4rem);
+    color:#fff;box-shadow:var(--shadow);background:linear-gradient(120deg,#2bb673 0%,#1fa6a0 45%,#ff8c42 110%)}
+  .hero h1{font-family:var(--serif);font-weight:800;font-size:clamp(1.7rem,5vw,2.7rem);line-height:1.05;text-shadow:0 2px 0 rgba(0,0,0,.12)}
+  .hero p{font-weight:600;max-width:48ch;margin-top:.5rem;color:#f3fbf6;font-size:clamp(.95rem,2vw,1.08rem)}
+  .hero .vs{position:absolute;top:50%;right:clamp(1rem,5vw,2.4rem);transform:translateY(-50%);
+    font-family:var(--serif);font-weight:800;font-size:clamp(2.4rem,8vw,4.2rem);opacity:.22}
+
+  .panel{background:var(--surface);border:2.5px solid var(--ink);border-radius:1.2rem;
+    box-shadow:var(--shadow-hard);padding:clamp(1rem,2.5vw,1.4rem);margin-top:1.4rem}
+  .panel h2{font-family:var(--serif);font-weight:800;font-size:1.35rem;display:flex;align-items:center;gap:.5rem}
+  .hint{color:var(--slate);font-weight:600;font-size:.92rem;margin-top:.25rem}
+
+  .voter{border:2px solid var(--line);border-radius:1rem;padding:.9rem;margin-top:1rem;background:#fffdf8;transition:border-color .15s}
+  .voter:focus-within{border-color:var(--sea)}
+  .voter-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .voter-num{flex:0 0 auto;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--sun);color:var(--ink);
+    font-family:var(--serif);font-weight:800;display:grid;place-items:center;border:2px solid var(--ink)}
+  .voter-top input{flex:1 1 12rem;min-width:9rem;font-family:var(--sans);font-weight:700;font-size:1.02rem;
+    color:var(--ink);border:2px solid var(--line);border-radius:.6rem;padding:.5rem .7rem;background:#fff}
+  .voter-top input:focus{outline:none;border-color:var(--sea)}
+  .rm{flex:0 0 auto;border:2px solid var(--line);background:#fff;color:var(--slate);border-radius:.6rem;
+    width:2.2rem;height:2.2rem;font-size:1.1rem;cursor:pointer;font-weight:800;line-height:1}
+  .rm:hover{border-color:#e25b5b;color:#e25b5b}
+
+  .picklbl{font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);margin:.8rem 0 .5rem}
+  .picks{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+  .pick{display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer;
+    border:2.5px solid var(--ink);border-radius:.8rem;padding:.7rem .6rem;background:#fff;
+    font-family:var(--serif);font-weight:800;font-size:1.08rem;color:var(--ink);transition:transform .08s, background .12s;
+    box-shadow:2px 3px 0 rgba(22,50,59,.12)}
+  .pick .em{font-size:1.5rem}
+  .pick:active{transform:translateY(2px)}
+  .pick[aria-pressed="true"]{color:#fff;box-shadow:4px 5px 0 var(--ink)}
+  .pick.cr[aria-pressed="true"]{background:var(--green)}
+  .pick.sc[aria-pressed="true"]{background:var(--orange)}
+
+  .actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem;align-items:center}
+  button.btn{font-family:var(--serif);font-weight:800;cursor:pointer;border-radius:.8rem;border:2.5px solid var(--ink);
+    padding:.7rem 1.1rem;font-size:1rem;transition:transform .08s}
+  button.btn:active{transform:translateY(2px)}
+  .btn.add{background:#fff;color:var(--ink)} .btn.add:hover{background:#fff7e6}
+  .btn.calc{background:var(--brand);color:#fff;box-shadow:var(--shadow-hard);font-size:1.1rem;padding:.8rem 1.5rem}
+  .btn.calc:hover{background:var(--brandd)}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--slate);font-size:.9rem;padding:.5rem .8rem}
+  .btn.ghost:hover{color:#e25b5b;border-color:#e25b5b}
+  .vcount{color:var(--slate);font-weight:700;font-size:.92rem;margin-left:auto}
+
+  #results{margin-top:1.4rem}
+  .winner{border-radius:1.2rem;border:2.5px solid var(--ink);box-shadow:var(--shadow-hard);overflow:hidden}
+  .winner .top{padding:1.3rem 1.4rem;color:#fff;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .winner .trophy{font-size:2.6rem;filter:drop-shadow(0 3px 0 rgba(0,0,0,.18))}
+  .winner .wlabel{font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+  .winner .wname{font-family:var(--serif);font-weight:800;font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1}
+  .winner .wsub{padding:.7rem 1.4rem;background:#fff;font-weight:700;color:var(--slate);font-size:.95rem}
+  .winner.tie .top{background:var(--sea)!important}
+
+  .tally{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .row{border:2px solid var(--line);border-radius:.8rem;padding:.7rem .9rem;background:#fff}
+  .row .head{display:flex;align-items:center;gap:.6rem;font-family:var(--serif);font-weight:800;font-size:1.15rem}
+  .row .head .em{font-size:1.5rem}
+  .row .head .n{margin-left:auto;font-size:1.2rem}
+  .row .head .n small{color:var(--slate);font-weight:700;font-size:.85rem;margin-left:.3rem}
+  .bar{height:.85rem;border-radius:.6rem;background:#eef1ef;margin-top:.55rem;overflow:hidden;border:1px solid var(--line)}
+  .bar > span{display:block;height:100%;border-radius:.6rem;transition:width .5s ease}
+  .row.cr .bar > span{background:var(--green)} .row.sc .bar > span{background:var(--orange)}
+  .who{color:var(--slate);font-weight:600;font-size:.85rem;margin-top:.45rem}
+  .err{color:#c0392b;font-weight:700;margin-top:.8rem}
+  footer{text-align:center;color:var(--slate);font-weight:600;font-size:.82rem;margin-top:2rem}
+  footer a{color:var(--sea);font-weight:700}
+  @media (max-width:560px){ .picks{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="nav" href="index.html">← Back to the full 4-trip ranked vote</a>
+  <header class="hero">
+    <div class="vs" aria-hidden="true">VS</div>
+    <h1>🦥 Costa Rica vs. SoCal 🏖️</h1>
+    <p>Down to two? Everyone picks <b>one</b> — most votes wins. Simple head-to-head, no ranking.</p>
+  </header>
+
+  <section class="panel">
+    <h2>🗳️ Cast your votes</h2>
+    <p class="hint">Add each person, type their name, and tap the trip they want. Then hit calculate.</p>
+    <div id="voters"></div>
+    <div class="actions">
+      <button class="btn add" id="addVoter">＋ Add a voter</button>
+      <button class="btn ghost" id="clearAll">Clear all</button>
+      <span class="vcount" id="vcount"></span>
+    </div>
+    <div class="actions" style="margin-top:1rem">
+      <button class="btn calc" id="calc">🏆 Calculate the winner</button>
+    </div>
+    <div id="err"></div>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+
+  <footer>Saved on this device automatically · A simple majority vote · <a href="index.html">Need all four trips? Use the ranked vote →</a></footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const STORAGE = 'vacationHeadToHeadV1';
+  const CANDS = [
+    {id:'costa-rica', name:'Costa Rica', emoji:'🦥', color:'#2bb673', cls:'cr'},
+    {id:'socal',      name:'SoCal',      emoji:'🏖️', color:'#ff8c42', cls:'sc'},
+  ];
+  const byId = id => CANDS.find(c=>c.id===id);
+  const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'v'+Math.random().toString(36).slice(2);
+  const esc = s => String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function newVoter(){ return {id:uid(), name:'', pick:null}; }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE); if(!raw) return null;
+      const v = JSON.parse(raw); if(!Array.isArray(v)) return null;
+      return v.map(p=>({ id:p.id||uid(), name:typeof p.name==='string'?p.name:'', pick:byId(p.pick)?p.pick:null }));
+    }catch(e){ return null; }
+  }
+  function save(){ try{ localStorage.setItem(STORAGE, JSON.stringify(voters)); }catch(e){} }
+  let voters = load() || [newVoter(), newVoter()];
+
+  function voterCardHTML(v, i){
+    const picks = CANDS.map(c=>{
+      const on = v.pick===c.id;
+      return `<button class="pick ${c.cls}" data-pick="${v.id}" data-cand="${c.id}" aria-pressed="${on}">
+        <span class="em" aria-hidden="true">${c.emoji}</span>${esc(c.name)}</button>`;
+    }).join('');
+    return `<div class="voter" data-vid="${v.id}">
+      <div class="voter-top">
+        <span class="voter-num">${i+1}</span>
+        <input type="text" placeholder="Voter ${i+1} name" value="${esc(v.name)}" data-name="${v.id}" aria-label="Voter ${i+1} name">
+        <button class="rm" data-rm="${v.id}" title="Remove this voter" aria-label="Remove voter">✕</button>
+      </div>
+      <div class="picklbl">Their pick</div>
+      <div class="picks">${picks}</div>
+    </div>`;
+  }
+
+  function render(){
+    document.getElementById('voters').innerHTML = voters.map(voterCardHTML).join('');
+    document.getElementById('vcount').textContent = voters.length + (voters.length===1?' voter':' voters');
+    attach();
+  }
+
+  function attach(){
+    document.querySelectorAll('input[data-name]').forEach(inp=>{
+      inp.addEventListener('input', e=>{ const v=voters.find(x=>x.id===e.target.getAttribute('data-name')); if(v){ v.name=e.target.value; save(); } });
+    });
+    document.querySelectorAll('button[data-rm]').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const id=e.currentTarget.getAttribute('data-rm');
+        voters = voters.filter(v=>v.id!==id);
+        if(voters.length===0) voters.push(newVoter());
+        save(); render();
+      });
+    });
+    document.querySelectorAll('button[data-pick]').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const vid=e.currentTarget.getAttribute('data-pick');
+        const cand=e.currentTarget.getAttribute('data-cand');
+        const v=voters.find(x=>x.id===vid); if(!v) return;
+        v.pick = (v.pick===cand) ? null : cand; // tap again to unpick
+        save(); render();
+      });
+    });
+  }
+
+  function calcAndRender(){
+    const errEl=document.getElementById('err'); errEl.innerHTML='';
+    const counts={}; CANDS.forEach(c=>counts[c.id]={n:0,who:[]});
+    let noPick=0;
+    voters.forEach((v,i)=>{
+      if(v.pick && counts[v.pick]){ counts[v.pick].n++; counts[v.pick].who.push(v.name.trim()||('Voter '+(i+1))); }
+      else noPick++;
+    });
+    const totalVotes = CANDS.reduce((s,c)=>s+counts[c.id].n,0);
+    if(totalVotes===0){
+      errEl.innerHTML='<p class="err">No votes yet — tap a trip for at least one voter.</p>';
+      document.getElementById('results').innerHTML=''; return;
+    }
+    const [a,b] = CANDS;
+    const na=counts[a.id].n, nb=counts[b.id].n;
+    const tie = na===nb;
+    const win = tie ? null : (na>nb ? a : b);
+    const pct = c => totalVotes? Math.round(counts[c.id].n/totalVotes*100):0;
+
+    const rows = CANDS.map(c=>`
+      <div class="row ${c.cls}">
+        <div class="head"><span class="em">${c.emoji}</span>${esc(c.name)}
+          <span class="n">${counts[c.id].n}<small>${counts[c.id].n===1?'vote':'votes'} · ${pct(c)}%</small></span></div>
+        <div class="bar"><span style="width:${pct(c)}%"></span></div>
+        ${counts[c.id].who.length?`<div class="who">${counts[c.id].who.map(esc).join(' · ')}</div>`:''}
+      </div>`).join('');
+
+    const top = tie
+      ? `<div class="top"><span class="trophy">🤝</span><div><div class="wlabel">Dead even</div><div class="wname">It's a tie — ${na} to ${nb}</div></div></div>`
+      : `<div class="top" style="background:${win.color}"><span class="trophy">🏆</span><div><div class="wlabel">The family is going to</div><div class="wname">${win.emoji} ${esc(win.name)}</div></div></div>`;
+    const sub = tie
+      ? `${totalVotes} ${totalVotes===1?'vote':'votes'} cast${noPick?` · ${noPick} not voted`:''} — break the tie with one more voter!`
+      : `Won ${Math.max(na,nb)}–${Math.min(na,nb)} (${pct(win)}%) · ${totalVotes} ${totalVotes===1?'vote':'votes'} cast${noPick?` · ${noPick} not voted`:''}`;
+
+    document.getElementById('results').innerHTML = `
+      <div class="winner ${tie?'tie':''}">${top}<div class="wsub">${sub}</div></div>
+      <div class="tally">${rows}</div>`;
+    document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  document.getElementById('addVoter').addEventListener('click', ()=>{
+    voters.push(newVoter()); save(); render();
+    const cards=document.querySelectorAll('.voter'); const last=cards[cards.length-1];
+    if(last){ last.scrollIntoView({behavior:'smooth',block:'center'}); const inp=last.querySelector('input'); if(inp) inp.focus(); }
+  });
+  document.getElementById('clearAll').addEventListener('click', ()=>{
+    if(!confirm('Clear all voters and results?')) return;
+    voters=[newVoter(),newVoter()]; save(); render();
+    document.getElementById('results').innerHTML=''; document.getElementById('err').innerHTML='';
+  });
+  document.getElementById('calc').addEventListener('click', calcAndRender);
+
+  window.__h2h = { loadVoters(arr){ voters=arr.map(v=>({id:uid(),name:v.name||'',pick:v.pick||null})); save(); render(); }, calc:calcAndRender, get voters(){return voters;} };
+
+  render();
+})();
+</script>
+</body>
+</html>
